@@ -2,8 +2,8 @@
 
   " self identification details, for use in logging, self-logging, and self-tests alike "
 
-  (:require [clojure.string :as str])
-  (:require [clojure.java.shell :as shell]))
+  (:require [clojure.string :as str]
+            [clojure.java.shell :as shell]))
 
 (def project-git-hash
   ; http://stackoverflow.com/a/29528037/1509695

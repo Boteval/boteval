@@ -2,13 +2,15 @@
 
   " runs the clojure samples, as that it only tests that they do not throw "
 
-  (:require [clojure.test :refer :all])
-  (:require [org.boteval.self :as self])
-  (:use [org.boteval.engine.api]
-        [boteval.dumbot.driver]
-        [org.boteval.defaultLogger.core]
-        [boteval.samples.scenarios]
-        [boteval.datastore-clean]))
+  (:require
+     [clojure.test :refer :all]
+     [org.boteval.self :as self])
+  (:use
+     [org.boteval.engine.api]
+     [boteval.dumbot.driver]
+     [org.boteval.defaultLogger.core]
+     [boteval.samples.scenarios]
+     [boteval.datastore-clean]))
 
 (deftest ^:samples run
     (init

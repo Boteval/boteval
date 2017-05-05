@@ -2,15 +2,15 @@
 
   " api to be used by user code "
 
-  (:require [org.boteval.driverInterface :refer [Driver]]) ; the driver interface
-  (:require [org.boteval.loggerInterface :refer [Logger]]) ; the logger interface
-  (:use [org.boteval.time])
-  (:require [org.boteval.self :as self])
-  (:use [org.boteval.self-logging])
-  (:use [org.boteval.engine.api])
-  (:require [cheshire.core :as json])
-  (:require [honeysql.core :as sql])
-  (:require [honeysql.helpers :refer :all])
+  (:require [org.boteval.driverInterface :refer [Driver]] ; the driver interface
+            [org.boteval.loggerInterface :refer [Logger]] ; the logger interface
+            [cheshire.core :as json]
+            [honeysql.core :as sql]
+            [honeysql.helpers :refer :all]
+            [org.boteval.self :as self])
+  (:use     [org.boteval.self-logging]
+            [org.boteval.engine.api]
+            [org.boteval.time])
   (:gen-class))
 
 
@@ -19,13 +19,13 @@
   (cond
     (and (map? arg) (every? arg [:scenario-name :scenario-project-name])) :scenario-unique-key
     (number? arg) :scenario-id
-    :default (throw (Exception. "invalid scenario specification"))))
+    :default (throw (Exception. (str "invalid scenario specification: " arg)))))
 
-(defmulti get-scenario-executions
+(defmulti list-scenario-executions
   " returns all executions for given scenario "
   scenario-specifier)
 
-(defmethod get-scenario-executions :scenario-id
+(defmethod list-scenario-executions :scenario-id
   [scenario-id logger]
   " returns the executions for given database-assgined scenario-id "
   {:pre (some? scenario-id)}
@@ -34,9 +34,9 @@
       (select :scenario-id :id :parent_id :started :ended :parameters)
       (where [:= :scenario_id scenario-id]))))
 
-(defmethod get-scenario-executions :scenario-unique-key
+(defmethod list-scenario-executions :scenario-unique-key
   [{:keys [scenario-name scenario-project-name]} logger]
-   " returns the executions for given scenario identification.
+   " lists the executions for the given scenario identification.
      (TODO) https://github.com/boteval/boteval/issues/7
      actually, this is not a very solid way to get a unique scenario,
      a unique key for a scenario involves more than a project name. it should
@@ -57,7 +57,7 @@
 
         (cond
           (> ids 1) (throw (Exception. (str "error in uniquely identifying the input scenario: only one scenario id was expected but " ids " ids were found in the database. oops ...")))
-          (= ids 1) (get-scenario-executions (:id (first scenario-id-rows)) logger)
+          (= ids 1) (list-scenario-executions (:id (first scenario-id-rows)) logger)
           :default nil)))
 
 
@@ -66,8 +66,9 @@
   " NOTE: latest is elusive semantics. one execution might start after the other but finish first; which one is latest then? "
   (println scenario-specifier)
   (let
-    [executions (get-scenario-executions scenario-specifier logger)]
-    (first (reverse (sort-by :started executions))))) ; latest here means latest started
+    [executions (list-scenario-executions scenario-specifier logger)]
+      (first (reverse (sort-by :started executions))))) ; latest here means latest started
+
 
 
 (defn get-latest-scenario-execution-or-execute [scenario-specifier logger scenario-fn scenario-fn-params]
@@ -76,3 +77,10 @@
   (or
     (get-latest-scenario-execution scenario-specifier logger)
     (run-scenario scenario-fn scenario-fn-params)))
+
+
+(defn analyze-latest-scenario-execution-or-execute [scenario-specifier logger scenario-fn scenario-fn-params]
+  (let [scenario-execution-id (get-latest-scenario-execution-or-execute scenario-specifier logger scenario-fn scenario-fn-params)]
+    #_(println scenario-execution-id)
+    (. logger get-logged-exchanges scenario-execution-id)))
+

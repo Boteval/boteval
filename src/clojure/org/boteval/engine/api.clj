@@ -2,21 +2,26 @@
 
   " api to be used by user code "
 
-  (:require [org.boteval.driverInterface :refer [Driver]]) ; the driver interface
-  (:require [org.boteval.loggerInterface :refer [Logger]]) ; the logger interface
-  (:use [org.boteval.time])
-  (:require [org.boteval.self :as self])
-  (:use [org.boteval.self-logging])
-  (:use [org.boteval.util])
-  (:require [cheshire.core :as json])
+  (:require
+     [org.boteval.driverInterface :refer [Driver]] ; the driver interface
+     [org.boteval.loggerInterface :refer [Logger]] ; the logger interface
+     [org.boteval.self :as self]
+     [cheshire.core :as json])
+  (:use
+     [org.boteval.time]
+     [org.boteval.self-logging]
+     [org.boteval.util])
+
   #_(:require [clojure.repl]) ; for demunge if we'll need it after all
+
   (:gen-class))
 
 
 (defn init
   " initializes the api functions to use the given driver and logger
     todo: this is not concurrency-safe, one init will overwrite the other.
-    todo: consider a design providing the api not through `defn` per api endpoint (?) "
+    todo: consider a design providing this api differently than through
+          multiple dynamic `defn` statements, as currently implemented. "
   [project-meta driver logger]
   {:pre [(contains? project-meta :project-name)
          (contains? project-meta :project-owner)
@@ -77,11 +82,13 @@
     nil
 )
 
+
 (defmacro run-scenario [fn-name fn-params]
   " automatically passes the function's full name as the scenario name "
    (list 'run-scenario-impl fn-name (list `clean-fn-name fn-name) fn-params))
 
-; a started attempt on a macro for defining scenario functions, that would automatically add
+
+; paused attempt at a macro for defining scenario functions, that would automatically add
 ; a first argument (named context) to them and hinge metadata on them. abandoned for now.
 ; (see http://stackoverflow.com/a/989482/1509695 for how to correctly add metadata)
 #_(defmacro def-scenario [given-name params body]

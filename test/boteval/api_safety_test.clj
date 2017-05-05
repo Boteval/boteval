@@ -2,8 +2,9 @@
 
   " placeholder for tests for api safety (basically, that abusing the api produces exceptions before anything actually happens "
 
-  (:require [clojure.test :refer :all])
-  (:require [org.boteval.self :as self])
+  (:require
+     [clojure.test :refer :all]
+     [org.boteval.self :as self])
   (:use [org.boteval.engine.api]
         [boteval.dumbot.driver]
         [org.boteval.defaultLogger.core]

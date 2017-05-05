@@ -2,12 +2,14 @@
   " helper extension for org.boteval.defaultLogger.core ―
     exposes a function that gets-or-sets an id for a given scenario without much database access "
 
-  (:use clojure.test)
-  (:require [hikari-cp.core :refer :all])
-  (:require [clojure.java.jdbc :as jdbc])
-  (:require [honeysql.core :as sql])
-  (:require [honeysql.helpers :refer :all])
-  (:use [org.boteval.self-logging]))
+  (:require
+     [hikari-cp.core :refer :all]
+     [clojure.java.jdbc :as jdbc]
+     [honeysql.core :as sql]
+     [honeysql.helpers :refer :all])
+  (:use
+    [org.boteval.self-logging]
+    [clojure.test]))
 
 ;; a hikari connection pool definition
 ;; (may optimize for performance following https://github.com/brettwooldridge/HikariCP/wiki/MySQL-Configuration)

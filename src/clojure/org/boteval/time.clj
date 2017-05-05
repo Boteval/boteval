@@ -1,6 +1,6 @@
 (ns org.boteval.time
-  (:require [clj-time.core :as time])
-  (:require [clj-time.coerce :as time-convert]))
+  (:require [clj-time.core :as time]
+            [clj-time.coerce :as time-convert]))
 
 (defn now []
   "get the current time. this only gives millisecond precision, to get micro or nano precision.

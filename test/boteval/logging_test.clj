@@ -3,17 +3,19 @@
   " mildly stress tests the logging
     assumes that no other tests concurrently run "
 
-  (:require [clojure.test :refer :all])
-  (:require [org.boteval.self :as self])
-  (:use [org.boteval.engine.api]
-        [boteval.dumbot.driver]
-        [boteval.samples.scenarios]
-        [boteval.datastore-clean])
-  (:require [clojure.java.io :as io])
-  (:require [org.boteval.defaultLogger.core :as logger])
-  (:require [honeysql.core :as sql])
-  (:require [honeysql.helpers :refer :all])
-  (:use [org.boteval.util]))
+  (:require
+     [clojure.test :refer :all]
+     [org.boteval.self :as self]
+     [clojure.java.io :as io]
+     [org.boteval.defaultLogger.core :as logger]
+     [honeysql.core :as sql]
+     [honeysql.helpers :refer :all])
+  (:use
+     [org.boteval.engine.api]
+     [boteval.dumbot.driver]
+     [boteval.samples.scenarios]
+     [boteval.datastore-clean]
+     [org.boteval.util]))
 
 
 (defn ^:private get-logged-executions []

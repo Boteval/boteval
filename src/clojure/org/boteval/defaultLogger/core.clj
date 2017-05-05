@@ -4,19 +4,23 @@
 
   a component logging messages sent and received to/from the target bots → into the data store,
   the data store being mysql here, we use https://github.com/jkk/honeysql for query building.
+  well as providing methods to query its logged data.
 
   some outstanding TODO items:
 
-  + add time & message quantity buffering for proper performance
+  + add time & message buffering for proper performance (tricky while relying on db-side auto incrementing values)
   + handle draining the buffer on program exit too "
 
-  (:require [org.boteval.loggerInterface :refer [Logger]])
-  (:require [hikari-cp.core :refer :all])
-  (:require [clojure.java.jdbc :as jdbc])
-  (:require [honeysql.core :as sql])
-  (:require [honeysql.helpers :refer :all])
-  (:use [org.boteval.self-logging])
-  (:require [cheshire.core :as json]))
+  (:require
+      [org.boteval.loggerInterface :refer [Logger]]
+      [hikari-cp.core :refer :all]
+      [clojure.java.jdbc :as jdbc]
+      [honeysql.core :as sql]
+      [honeysql.helpers :refer [select from where]]
+      [cheshire.core :as json])
+  (:use
+      [org.boteval.self-logging]))
+
 
 (load "core_db_util")
 (load "core_getScenarioId")
@@ -101,4 +105,18 @@
        (let [sql-statement (sql/format honey-sql-map)]
           (println sql-statement)
           (jdbc/with-db-connection [connection {:datasource datasource}]
-             (jdbc/query connection sql-statement))))))
+             (jdbc/query connection sql-statement))))
+
+
+    (get-logged-exchanges [this scenario-execution-id]
+      {:pre (number? scenario-execution-id)}
+      " retrieves all exchanges for given scenario execution "
+      (map (fn [exchange-map] (clojure.core/update exchange-map :is_user #(if (= % 1) true false)))
+         (. this get-from-db (->
+            (select :text :is_user :exchange_time :session_id :scenario_execution_id)
+            (from :exchanges)
+            (where [:= :scenario_execution_id scenario-execution-id])))))
+
+))
+
+

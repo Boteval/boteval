@@ -1,8 +1,8 @@
 ;;; some sample scenarios
 
 (ns boteval.samples.scenarios
-  (:use [org.boteval.engine.api])
-  (:use [org.boteval.util]))
+  (:use [org.boteval.engine.api]
+        [org.boteval.util]))
 
 (defn scenario-1 [{:keys [session-id]}]
   (sendToBot session-id "Hi bot")

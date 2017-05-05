@@ -1,9 +1,14 @@
 (ns org.boteval.loggerInterface)
 
 (defprotocol Logger
-  "a protocol for a logger"
+
+  " a protocol for bot activity logging and the retrieval of logged bot activity.
+    this protocol defines both the logging and the retrieval, both of which are
+    equally logger-specific. "
 
   (init [_ project-meta])
+
+  ;; writing methods
 
   (log-scenario-execution-start [_ scenario-name scenario-hierarchy start-time parameters])
 
@@ -11,6 +16,10 @@
 
   (log [_ scenario-hierarchy message-record])
 
-  (get-from-db [_ honey-sql-map]) ; TODO: rename more neutrally
+  ;; retrieval methods
+
+  (get-from-db [_ honey-sql-map]) ; a utility method we should actually logically place elsewhere
+
+  (get-logged-exchanges [this scenario-execution-id])
 
   (shutdown [_]))
