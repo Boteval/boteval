@@ -16,14 +16,12 @@
       [hikari-cp.core :refer :all]
       [clojure.java.jdbc :as jdbc]
       [honeysql.core :as sql]
-      [honeysql.helpers :refer [select from where]]
-      [cheshire.core :as json])
+      [honeysql.helpers :refer :all]
+      [cheshire.core :as json]
+      [org.boteval.defaultLogger.db :refer :all]
+      [org.boteval.defaultLogger.entity-id :refer :all])
   (:use
       [org.boteval.self-logging]))
-
-
-(load "core_db_util")
-(load "core_getScenarioId")
 
 
 (def default-logger (reify Logger
@@ -78,7 +76,7 @@
       [this scenario-name scenario-execution-hierarchy start-time parameters]
       {:pre (map? parameters) }
 
-      (let [scenario-id (get-scenario-id project-id scenario-name)]
+      (let [scenario-id (get-entity-id project-id scenario-name :org.boteval.defaultLogger.entity-id/scenarios)]
         (let [parent-scenario-execution-id (:scenario-execution-id (first scenario-execution-hierarchy))]
            (insert-and-get-id
              :scenario_executions
@@ -111,7 +109,7 @@
     (get-logged-exchanges [this scenario-execution-id]
       {:pre (number? scenario-execution-id)}
       " retrieves all exchanges for given scenario execution "
-      (map (fn [exchange-map] (clojure.core/update exchange-map :is_user #(if (= % 1) true false)))
+      (map (fn [exchange-map] (clojure.core/update exchange-map :is_user #(if (= % 1) true false))) ; we map back from MySQL 0 and 1 to true and false. make this a separate function.
          (. this get-from-db (->
             (select :text :is_user :exchange_time :session_id :scenario_execution_id)
             (from :exchanges)

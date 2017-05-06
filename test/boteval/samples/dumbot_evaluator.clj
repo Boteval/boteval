@@ -22,7 +22,7 @@
   " just a scenario sending messages to our bot "
 
   (let [session-id (openBotSession)]
-    (dotimes [_ 500] (sendToBot session-id "hi"))))
+    (dotimes [_ 30] (sendToBot session-id "hi"))))
 
 
 (defn sample-evaluator [logger]
@@ -59,4 +59,7 @@
        logger)
     (connectToBot)
 
-    (println (sample-evaluator logger))))
+    (write-analysis
+      1
+      "dumb-dumbot-evaluator"
+      (sample-evaluator logger))))

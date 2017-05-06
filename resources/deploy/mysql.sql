@@ -20,7 +20,7 @@ USE boteval;
   scenario entities
 **/
 
-/* tables */
+/* exchanges with the bot */
 CREATE TABLE `boteval`.`exchanges` (
   `text` VARCHAR(2048) NULL,
   `is_user` TINYINT NOT NULL COMMENT 'is it a user initiated exchange? false would mean a bot initiated exchange',
@@ -83,3 +83,22 @@ ADD CONSTRAINT `fk_scenarios_1`
   ON UPDATE NO ACTION;
 
 
+/**
+  analysis outputs
+**/
+
+CREATE TABLE `boteval`.`analysis_outputs` (
+  `project_id` INT NOT NULL COMMENT 'the project that the analyzer creating the record belongs to',
+  `name` CHAR(128) NOT NULL,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `output` JSON COMMENT 'the output of the analysis',
+  UNIQUE KEY `unique_key` (`name`, `project_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` DESC));
+
+ALTER TABLE `boteval`.`analysis_outputs`
+ADD CONSTRAINT `fk_analysis_outputs_1`
+  FOREIGN KEY (`project_id`)
+  REFERENCES `boteval`.`projects` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;

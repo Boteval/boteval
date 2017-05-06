@@ -2,15 +2,17 @@
 
   " api to be used by user code "
 
-  (:require [org.boteval.driverInterface :refer [Driver]] ; the driver interface
-            [org.boteval.loggerInterface :refer [Logger]] ; the logger interface
-            [cheshire.core :as json]
-            [honeysql.core :as sql]
-            [honeysql.helpers :refer :all]
-            [org.boteval.self :as self])
-  (:use     [org.boteval.self-logging]
-            [org.boteval.engine.api]
-            [org.boteval.time])
+  (:require
+    [org.boteval.driverInterface :refer [Driver]] ; the driver interface
+    [org.boteval.loggerInterface :refer [Logger]] ; the logger interface
+    [cheshire.core :as json]
+    [honeysql.core :as sql]
+    [honeysql.helpers :refer :all]
+    [org.boteval.self :as self])
+  (:use
+    [org.boteval.self-logging]
+    [org.boteval.engine.api]
+    [org.boteval.time])
   (:gen-class))
 
 
@@ -53,8 +55,6 @@
 
      ids (count scenario-id-rows)]
 
-     (println ids scenario-id-rows)
-
         (cond
           (> ids 1) (throw (Exception. (str "error in uniquely identifying the input scenario: only one scenario id was expected but " ids " ids were found in the database. oops ...")))
           (= ids 1) (list-scenario-executions (:id (first scenario-id-rows)) logger)
@@ -64,7 +64,6 @@
 (defn get-latest-scenario-execution [scenario-specifier logger]
   " returns the latest execution for given scenario "
   " NOTE: latest is elusive semantics. one execution might start after the other but finish first; which one is latest then? "
-  (println scenario-specifier)
   (let
     [executions (list-scenario-executions scenario-specifier logger)]
       (first (reverse (sort-by :started executions))))) ; latest here means latest started
@@ -79,8 +78,19 @@
     (run-scenario scenario-fn scenario-fn-params)))
 
 
+
 (defn analyze-latest-scenario-execution-or-execute [scenario-specifier logger scenario-fn scenario-fn-params]
   (let [scenario-execution-id (get-latest-scenario-execution-or-execute scenario-specifier logger scenario-fn scenario-fn-params)]
-    #_(println scenario-execution-id)
     (. logger get-logged-exchanges scenario-execution-id)))
+
+
+
+(defn write-analysis [project-id name output]
+  #_(first (db-execute
+           (-> (insert-into :analysis_outputs)
+               (values [{:project_id project-id
+                         :name name
+                         :output output
+                         }])))))
+
 

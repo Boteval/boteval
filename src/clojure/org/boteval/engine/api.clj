@@ -70,6 +70,7 @@
 
       " this is the function that runs a scenario, returning its logger assigned execution id
         a scenario should always be run through this function, other than during its development "
+
       (let [scenario-execution-id (. logger log-scenario-execution-start scenario-name scenario-execution-hierarchy (sql-time) fn-params)]
         (binding [scenario-execution-hierarchy
            (conj scenario-execution-hierarchy {:scenario-name scenario-name :scenario-execution-id scenario-execution-id})]

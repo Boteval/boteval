@@ -1,4 +1,7 @@
-(ns org.boteval.defaultLogger.core
+;;;; deprecated
+
+(ns ^:deprecated org.boteval.defaultLogger.core
+
   " helper extension for org.boteval.defaultLogger.core ―
     exposes a function that gets-or-sets a unique id for a given scenario "
 
@@ -19,7 +22,7 @@
    the id is obtained through MySQL auto-increment, in case the scenario is new to the database.
    as a race-condition with other threads can arise, if another thread already added our scenario
    between the test and add phases, we just return its id already created through that thread (but
-   this might cause wasting an auto-increment in the table).
+   this may waste an auto-increment in the table).
 
    as an alternative way to syncrhonize the unique creation of an id per scenario, but without going to the database,
    we could guard the two-phase process with a lock (but not a transaction, because of the auto-increment),
