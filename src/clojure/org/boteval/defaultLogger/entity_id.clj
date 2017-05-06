@@ -1,13 +1,7 @@
 (ns org.boteval.defaultLogger.entity-id
 
   " helper extension for org.boteval.defaultLogger.core ―
-    exposes a function that gets-or-sets a unique id for a given entity
-
-    TODO: we can use partial function application to bind an entity rather than
-          have conditional logic sprinkeld per entity type as currently.
-
-          none the same we'll need to constrain the allowed entity types,
-          a clojure type-hierarchy would make sense "
+    exposes a function that gets-or-sets a unique id for a given entity "
 
   (:require
      [hikari-cp.core :refer :all]
@@ -23,14 +17,14 @@
 (derive ::scenarios ::entity-type)
 (derive ::analyzers ::entity-type)
 
-;; a map associating every ::entity-type to a dedicated index atom
-(def index-mirors
+
+(def ^:private index-mirors
+  " a map associating every ::entity-type to a dedicated index atom "
   (apply array-map (mapcat (fn [entity-type] [entity-type (atom (sorted-map))]) (descendants ::entity-type))))
 
-;(def ^:private scenarios-index-mirror (atom (sorted-map)))
-;(def ^:private analyzers-index-mirror (atom (sorted-map)))
 
-(defn ^:private get-entity-id-from-db [project-id entity-name entity-type]
+(defn ^:private get-entity-id-from-db
+  [project-id entity-name entity-type]
   {:pre (isa? entity-type ::entity-type)}
 
   "from the database, returns, or sets and returns, an id for the given entity.
@@ -67,8 +61,9 @@
               (throw e)))))))))
 
 
-(defn get-entity-id [project-id entity-name entity-type]
-  {:pre (some? entity-name) :post (some? %)}
+(defn get-entity-id
+  [project-id entity-name entity-type]
+  {:pre (isa? entity-type ::entity-type) :post (some? %)}
 
   " gets an entity id for the given entity name, either from the in-memory cache or from the database "
 
